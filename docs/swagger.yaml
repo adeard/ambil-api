@@ -1,0 +1,15 @@
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: ADE ARDIAN
+    url: http://www.swagger.io/support
+  description: AMBIL API SERVICE
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: API SWAGGER FOR AMBIL API SERVICE
+  version: 1.0.0
+paths: {}
+swagger: "2.0"
