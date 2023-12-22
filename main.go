@@ -2,6 +2,7 @@ package main
 
 import (
 	"ambil-api/config"
+	"ambil-api/modules/user"
 	"log"
 	"net/http"
 	"os"
@@ -46,6 +47,7 @@ func main() {
 	router.GET("ambil/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	v1 := router.Group("ambil/api/v1")
+	user.NewUserHandler(v1, user.UserRegistry(db))
 
 	// router.Run(":86")
 

@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	Create(input domain.UserRequest) (domain.UserData, error)
+	CreateDescription(input domain.UserDescriptionRequest) (domain.UserDescriptionData, error)
 	GetDetail(input domain.UserData) (domain.UserData, error)
 }
 
@@ -22,6 +23,15 @@ func NewRepository(db *gorm.DB) *repository {
 func (r *repository) Create(input domain.UserRequest) (domain.UserData, error) {
 
 	user := domain.UserData{UserRequest: input}
+
+	err := r.db.Create(&user).Error
+
+	return user, err
+}
+
+func (r *repository) CreateDescription(input domain.UserDescriptionRequest) (domain.UserDescriptionData, error) {
+
+	user := domain.UserDescriptionData{UserDescriptionRequest: input}
 
 	err := r.db.Create(&user).Error
 

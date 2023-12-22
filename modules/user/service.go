@@ -3,6 +3,7 @@ package user
 import (
 	"ambil-api/domain"
 	"ambil-api/utils"
+	"errors"
 	"html"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 
 type Service interface {
 	Login(input domain.AuthRequest) (string, error)
-	Create(input domain.UserRequest) (domain.UserData, error)
+	Create(input domain.RegisterRequest) (domain.UserData, error)
 }
 
 type service struct {
@@ -22,7 +23,11 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
-func (s *service) Create(input domain.UserRequest) (domain.UserData, error) {
+func (s *service) Create(input domain.RegisterRequest) (domain.UserData, error) {
+
+	if input.Email != input.ConfirmPassword {
+		return domain.UserData{}, errors.New("password not match")
+	}
 
 	newUser, _ := hashedUser(domain.UserRequest{
 		Email:    input.Email,
@@ -30,6 +35,15 @@ func (s *service) Create(input domain.UserRequest) (domain.UserData, error) {
 	})
 
 	user, err := s.repository.Create(newUser)
+	if err != nil {
+		return domain.UserData{}, err
+	}
+
+	_, err = s.repository.CreateDescription(domain.UserDescriptionRequest{
+		UserId:      user.Id,
+		Fullname:    input.Fullname,
+		PhoneNumber: input.PhoneNumber,
+	})
 
 	return user, err
 }
@@ -68,13 +82,11 @@ func hashedUser(u domain.UserRequest) (domain.UserRequest, error) {
 	if err != nil {
 		return u, err
 	}
+
+	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
 	u.Password = string(hashedPassword)
 
-	//remove spaces in username
-	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
-
 	return u, nil
-
 }
 
 func verifyPassword(password, hashedPassword string) error {
