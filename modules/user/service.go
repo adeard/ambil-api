@@ -25,7 +25,7 @@ func NewService(repository Repository) *service {
 
 func (s *service) Create(input domain.RegisterRequest) (domain.UserData, error) {
 
-	if input.Email != input.ConfirmPassword {
+	if input.Password != input.ConfirmPassword {
 		return domain.UserData{}, errors.New("password not match")
 	}
 
@@ -33,6 +33,10 @@ func (s *service) Create(input domain.RegisterRequest) (domain.UserData, error) 
 		Email:    input.Email,
 		Password: input.Password,
 	})
+
+	newUser.IsActive = 1
+	newUser.CreatedAt = utils.GetCurrentDateTime()
+	newUser.UpdatedAt = utils.GetCurrentDateTime()
 
 	user, err := s.repository.Create(newUser)
 	if err != nil {
@@ -43,6 +47,8 @@ func (s *service) Create(input domain.RegisterRequest) (domain.UserData, error) 
 		UserId:      user.Id,
 		Fullname:    input.Fullname,
 		PhoneNumber: input.PhoneNumber,
+		CreatedAt:   utils.GetCurrentDateTime(),
+		UpdatedAt:   utils.GetCurrentDateTime(),
 	})
 
 	return user, err

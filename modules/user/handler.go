@@ -4,6 +4,7 @@ import (
 	"ambil-api/domain"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -22,24 +23,29 @@ func NewUserHandler(v1 *gin.RouterGroup, userService Service) {
 }
 
 func (h *userHandler) Login(c *gin.Context) {
-	var input domain.AuthRequest
+	start := time.Now()
+	input := domain.AuthRequest{}
 
 	c.ShouldBindJSON(&input)
 
 	token, err := h.userService.Login(input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message: err.Error(),
 		})
+
+		return
 	}
 
 	c.JSON(http.StatusOK, domain.Response{
-		Data: token,
+		Data:        token,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }
 
 func (h *userHandler) PostUser(c *gin.Context) {
-	var userInput domain.RegisterRequest
+	start := time.Now()
+	userInput := domain.RegisterRequest{}
 
 	err := c.ShouldBindJSON(&userInput)
 	if err != nil {
@@ -67,6 +73,7 @@ func (h *userHandler) PostUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, domain.Response{
-		Data: user,
+		Data:        user,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }
