@@ -2,6 +2,7 @@ package main
 
 import (
 	"ambil-api/config"
+	"ambil-api/docs"
 	"ambil-api/modules/user"
 	"log"
 	"net/http"
@@ -12,10 +13,9 @@ import (
 
 	swaggerfiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
-	"github.com/swaggo/swag/example/basic/docs"
 )
 
-// @Host localhost:8080
+// @Host localhost:6969
 // @title API SWAGGER FOR AMBIL API SERVICE
 // @version 1.0.0
 // @description AMBIL API SERVICE

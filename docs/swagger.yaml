@@ -1,4 +1,57 @@
-host: localhost:8080
+definitions:
+  domain.AuthRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  domain.RegisterRequest:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - confirm_password
+    - email
+    - fullname
+    - password
+    - phone_number
+    type: object
+  domain.Response:
+    properties:
+      data: {}
+      elapsed_time:
+        type: string
+      message:
+        type: string
+    type: object
+  domain.UserData:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: integer
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:6969
 info:
   contact:
     email: support@swagger.io
@@ -11,5 +64,54 @@ info:
   termsOfService: http://swagger.io/terms/
   title: API SWAGGER FOR AMBIL API SERVICE
   version: 1.0.0
-paths: {}
+paths:
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: ' AuthRequest Schema '
+        in: body
+        name: AuthRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Response'
+      summary: Login
+      tags:
+      - User
+  /api/v1/register:
+    post:
+      consumes:
+      - application/json
+      description: Register
+      parameters:
+      - description: ' RegisterRequest Schema '
+        in: body
+        name: RegisterRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.UserData'
+              type: object
+      summary: Register
+      tags:
+      - User
 swagger: "2.0"

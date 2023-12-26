@@ -22,6 +22,14 @@ func NewUserHandler(v1 *gin.RouterGroup, userService Service) {
 	v1.POST("/register", handler.PostUser)
 }
 
+// @Summary Login
+// @Description Login
+// @Accept  json
+// @Param AuthRequest body domain.AuthRequest true " AuthRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{}
+// @Router /api/v1/login [post]
+// @Tags User
 func (h *userHandler) Login(c *gin.Context) {
 	start := time.Now()
 	input := domain.AuthRequest{}
@@ -43,6 +51,14 @@ func (h *userHandler) Login(c *gin.Context) {
 	})
 }
 
+// @Summary Register
+// @Description Register
+// @Accept  json
+// @Param RegisterRequest body domain.RegisterRequest true " RegisterRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.UserData}
+// @Router /api/v1/register [post]
+// @Tags User
 func (h *userHandler) PostUser(c *gin.Context) {
 	start := time.Now()
 	userInput := domain.RegisterRequest{}
