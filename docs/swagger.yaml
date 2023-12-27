@@ -33,6 +33,30 @@ definitions:
       updated_at:
         type: string
     type: object
+  domain.MerchantCategoryData:
+    properties:
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      merchant_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  domain.MerchantCategoryRequest:
+    properties:
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      merchant_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   domain.MerchantData:
     properties:
       address:
@@ -497,6 +521,33 @@ paths:
           schema:
             $ref: '#/definitions/domain.Response'
       summary: Update Merchant
+      tags:
+      - Merchant
+  /api/v1/merchant/category:
+    post:
+      consumes:
+      - application/json
+      description: Create Category Merchant
+      parameters:
+      - description: ' MerchantCategoryRequest Schema '
+        in: body
+        name: MerchantCategoryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MerchantCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantCategoryData'
+              type: object
+      summary: Create Category Merchant
       tags:
       - Merchant
   /api/v1/order:

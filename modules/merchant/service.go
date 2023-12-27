@@ -7,8 +7,10 @@ import (
 
 type Service interface {
 	GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantData, error)
+	GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error)
 	GetDetail(merchantId string) (domain.MerchantData, error)
 	Store(input domain.MerchantRequest) (domain.MerchantData, error)
+	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
 	Update(driverId string, updatedData domain.MerchantRequest) error
 }
 
@@ -38,6 +40,24 @@ func (s *service) GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantD
 	return merchants, err
 }
 
+func (s *service) GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error) {
+
+	if input.Limit == 0 {
+		input.Limit = 20
+	}
+
+	if input.Page == 0 {
+		input.Page = 1
+	}
+
+	categories, err := s.repository.GetAllCategory(input)
+	if err != nil {
+		return []domain.MerchantCategoryData{}, err
+	}
+
+	return categories, err
+}
+
 func (s *service) GetDetail(merchantId string) (domain.MerchantData, error) {
 	merchant, err := s.repository.GetDetail(merchantId)
 
@@ -56,6 +76,19 @@ func (s *service) Store(input domain.MerchantRequest) (domain.MerchantData, erro
 	}
 
 	return merchant, err
+}
+
+func (s *service) StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error) {
+
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	merchantCategory, err := s.repository.StoreCategory(input)
+	if err != nil {
+		return domain.MerchantCategoryData{}, err
+	}
+
+	return merchantCategory, err
 }
 
 func (s *service) Update(merchantId string, input domain.MerchantRequest) error {

@@ -27,6 +27,9 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 	merchant.POST("", handler.Create)
 	merchant.GET("/:id", handler.GetDetail)
 	merchant.POST("/:id", handler.Update)
+
+	merchantCategory := merchant.Group("category")
+	merchantCategory.POST("", handler.CreateCategory)
 }
 
 // @Summary Get All Merchant
@@ -104,6 +107,49 @@ func (h *merchantHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        merchant,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Create Category Merchant
+// @Description Create Category Merchant
+// @Accept  json
+// @Param MerchantCategoryRequest body domain.MerchantCategoryRequest true " MerchantCategoryRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantCategoryData}
+// @Router /api/v1/merchant/category [post]
+// @Tags Merchant
+func (h *merchantHandler) CreateCategory(c *gin.Context) {
+	start := time.Now()
+	merchantCategoryInput := domain.MerchantCategoryRequest{}
+
+	err := c.ShouldBindJSON(&merchantCategoryInput)
+	if err != nil {
+
+		errorMessages := []string{}
+
+		for _, v := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s , condition : %s", v.Field(), v.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": errorMessages,
+		})
+
+		return
+	}
+
+	merchantCategory, err := h.merchantService.StoreCategory(merchantCategoryInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantCategory,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }

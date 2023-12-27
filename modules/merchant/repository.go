@@ -11,6 +11,8 @@ type Repository interface {
 	Update(input domain.MerchantData, updateData map[string]interface{}) error
 	GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantData, error)
 	GetDetail(merchantId string) (domain.MerchantData, error)
+	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
+	GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error)
 }
 
 type repository struct {
@@ -71,6 +73,40 @@ func (r *repository) GetAll(input domain.MerchantFilterRequest) ([]domain.Mercha
 	return drivers, err
 }
 
+func (r *repository) GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error) {
+	var drivers []domain.MerchantCategoryData
+	q := r.db.Debug().Table("merchant_categories")
+
+	if input.MerchantId != 0 {
+		q = q.Where("merchant_id = ?", input.MerchantId)
+	}
+
+	if input.CategoryId != 0 {
+		q = q.Where("category_id = ?", input.CategoryId)
+	}
+
+	if input.OrderBy != "" {
+		sort := "asc"
+		order := input.OrderBy
+
+		if input.SortBy != "" {
+			sort = input.SortBy
+		}
+
+		q = q.Order(order + " " + sort)
+	}
+
+	offset := (input.Limit * (input.Page - 1))
+
+	err := q.
+		Limit(input.Limit).
+		Offset(offset).
+		Find(&drivers).
+		Error
+
+	return drivers, err
+}
+
 func (r *repository) Store(input domain.MerchantRequest) (domain.MerchantData, error) {
 
 	merchant := domain.MerchantData{MerchantRequest: input}
@@ -78,6 +114,15 @@ func (r *repository) Store(input domain.MerchantRequest) (domain.MerchantData, e
 	err := r.db.Create(&merchant).Error
 
 	return merchant, err
+}
+
+func (r *repository) StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error) {
+
+	merchantCategory := domain.MerchantCategoryData{MerchantCategoryRequest: input}
+
+	err := r.db.Create(&merchantCategory).Error
+
+	return merchantCategory, err
 }
 
 func (r *repository) GetDetail(merchantId string) (domain.MerchantData, error) {
