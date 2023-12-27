@@ -3,6 +3,8 @@ package main
 import (
 	"ambil-api/config"
 	"ambil-api/docs"
+	"ambil-api/modules/merchant"
+	"ambil-api/modules/order"
 	"ambil-api/modules/user"
 	"log"
 	"net/http"
@@ -47,7 +49,10 @@ func main() {
 	router.GET("ambil/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	v1 := router.Group("ambil/api/v1")
+
 	user.NewUserHandler(v1, user.UserRegistry(db))
+	order.NewOrderHandler(v1, order.OrderRegistry(db))
+	merchant.NewMerchantHandler(v1, merchant.MerchantRegistry(db))
 
 	// router.Run(":86")
 

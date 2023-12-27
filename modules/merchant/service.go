@@ -65,7 +65,9 @@ func (s *service) Update(merchantId string, input domain.MerchantRequest) error 
 		return err
 	}
 
-	updateData := map[string]interface{}{}
+	updateData := map[string]interface{}{
+		"updated_at": utils.GetCurrentDateTime(),
+	}
 
 	if input.UserId != 0 {
 		updateData["user_id"] = input.UserId

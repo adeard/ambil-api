@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"ambil-api/domain"
+	"ambil-api/middlewares"
 	"fmt"
 	"net/http"
 	"time"
@@ -19,8 +20,10 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 	handler := &merchantHandler{merchantService}
 
 	merchant := v1.Group("merchant")
-
 	merchant.GET("", handler.GetAll)
+
+	merchant.Use(middlewares.JwtAuthMiddleware())
+
 	merchant.POST("", handler.Create)
 	merchant.GET("/:id", handler.GetDetail)
 	merchant.POST("/:id", handler.Update)
@@ -69,7 +72,7 @@ func (h *merchantHandler) GetAll(c *gin.Context) {
 // @Produce  json
 // @Success 200 {object} domain.Response{data=domain.MerchantData}
 // @Router /api/v1/merchant [post]
-// @Tags User
+// @Tags Merchant
 func (h *merchantHandler) Create(c *gin.Context) {
 	start := time.Now()
 	merchantInput := domain.MerchantRequest{}
