@@ -9,6 +9,30 @@ definitions:
     - email
     - password
     type: object
+  domain.CategoryData:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.CategoryRequest:
+    properties:
+      created_at:
+        type: string
+      is_active:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   domain.MerchantData:
     properties:
       address:
@@ -165,6 +189,141 @@ info:
   title: API SWAGGER FOR AMBIL API SERVICE
   version: 1.0.0
 paths:
+  /api/v1/category:
+    get:
+      consumes:
+      - application/json
+      description: Get All Category
+      parameters:
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: is_active
+        type: integer
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: updated_at
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.CategoryData'
+              type: object
+      summary: Get All Category
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Create Category
+      parameters:
+      - description: ' CategoryRequest Schema '
+        in: body
+        name: CategoryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.CategoryData'
+              type: object
+      summary: Create Category
+      tags:
+      - Category
+  /api/v1/category/{category_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Detail Category
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ' Category Id '
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.CategoryData'
+              type: object
+      summary: Get Detail Category
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Update Category
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ' Category Id '
+        in: path
+        name: category_id
+        required: true
+        type: string
+      - description: ' CategoryData Schema '
+        in: body
+        name: CategoryData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CategoryData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Response'
+      summary: Update Category
+      tags:
+      - Category
   /api/v1/login:
     post:
       consumes:

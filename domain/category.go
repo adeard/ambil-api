@@ -15,3 +15,8 @@ type CategoryData struct {
 func (CategoryData) TableName() string {
 	return "categories"
 }
+
+type CategoryFilterRequest struct {
+	CategoryRequest
+	FilterRequest
+}

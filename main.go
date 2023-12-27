@@ -3,6 +3,7 @@ package main
 import (
 	"ambil-api/config"
 	"ambil-api/docs"
+	"ambil-api/modules/category"
 	"ambil-api/modules/merchant"
 	"ambil-api/modules/order"
 	"ambil-api/modules/user"
@@ -52,6 +53,7 @@ func main() {
 
 	user.NewUserHandler(v1, user.UserRegistry(db))
 	order.NewOrderHandler(v1, order.OrderRegistry(db))
+	category.NewCategoryHandler(v1, category.CategoryRegistry(db))
 	merchant.NewMerchantHandler(v1, merchant.MerchantRegistry(db))
 
 	// router.Run(":86")
