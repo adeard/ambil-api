@@ -12,6 +12,8 @@ type Service interface {
 	GetDetail(merchantId string) (domain.MerchantData, error)
 	Store(input domain.MerchantRequest) (domain.MerchantData, error)
 	StoreItem(input domain.MerchantItemRequest) (domain.MerchantItemData, error)
+	StoreRating(input domain.MerchantRatingRequest) (domain.MerchantRatingData, error)
+	StoreRatingImage(input domain.MerchantRatingImageRequest) (domain.MerchantRatingImageData, error)
 	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
 	Update(merchantId string, updatedData domain.MerchantRequest) error
 	UpdateItem(merchantItemId string, updatedData domain.MerchantItemRequest) error
@@ -123,6 +125,32 @@ func (s *service) StoreItem(input domain.MerchantItemRequest) (domain.MerchantIt
 	}
 
 	return merchantItem, err
+}
+
+func (s *service) StoreRating(input domain.MerchantRatingRequest) (domain.MerchantRatingData, error) {
+
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	merchantRating, err := s.repository.StoreRating(input)
+	if err != nil {
+		return domain.MerchantRatingData{}, err
+	}
+
+	return merchantRating, err
+}
+
+func (s *service) StoreRatingImage(input domain.MerchantRatingImageRequest) (domain.MerchantRatingImageData, error) {
+
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	merchantRatingImage, err := s.repository.StoreRatingImage(input)
+	if err != nil {
+		return domain.MerchantRatingImageData{}, err
+	}
+
+	return merchantRatingImage, err
 }
 
 func (s *service) Update(merchantId string, input domain.MerchantRequest) error {

@@ -21,17 +21,24 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 
 	merchant := v1.Group("merchant")
 	merchant.GET("", handler.GetAll)
-	merchant.GET("item", handler.GetAllItem)
-	merchant.GET("category", handler.GetAllCategory)
-
-	merchant.Use(middlewares.JwtAuthMiddleware())
-
-	merchant.POST("", handler.Create)
 	merchant.GET(":id", handler.GetDetail)
-	merchant.POST("item", handler.CreateItem)
-	merchant.POST("category", handler.CreateCategory)
-	merchant.POST(":id", handler.Update)
-	merchant.POST("item/:id", handler.UpdateItem)
+	merchant.POST("", middlewares.JwtAuthMiddleware(), handler.Create)
+	merchant.POST(":id", middlewares.JwtAuthMiddleware(), handler.Update)
+
+	category := merchant.Group("category")
+	category.GET("", handler.GetAllCategory)
+	category.POST("", middlewares.JwtAuthMiddleware(), handler.CreateCategory)
+
+	item := merchant.Group("item")
+	item.GET("", handler.GetAllItem)
+	item.Use(middlewares.JwtAuthMiddleware())
+	item.POST("", handler.CreateItem)
+	item.POST(":id", handler.UpdateItem)
+
+	rating := merchant.Group("rating")
+	rating.Use(middlewares.JwtAuthMiddleware())
+	rating.POST("", handler.CreateRating)
+	rating.POST("image", handler.CreateRatingImage)
 }
 
 // @Summary Get All Merchant
@@ -267,6 +274,92 @@ func (h *merchantHandler) CreateItem(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        merchantItem,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Create Merchant Rating
+// @Description Create Merchant Rating
+// @Accept  json
+// @Param MerchantRatingRequest body domain.MerchantRatingRequest true " MerchantRatingRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantRatingData}
+// @Router /api/v1/merchant/rating [post]
+// @Tags Merchant
+func (h *merchantHandler) CreateRating(c *gin.Context) {
+	start := time.Now()
+	merchantRatingInput := domain.MerchantRatingRequest{}
+
+	err := c.ShouldBindJSON(&merchantRatingInput)
+	if err != nil {
+
+		errorMessages := []string{}
+
+		for _, v := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s , condition : %s", v.Field(), v.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": errorMessages,
+		})
+
+		return
+	}
+
+	merchantRating, err := h.merchantService.StoreRating(merchantRatingInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantRating,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Create Merchant Rating Image
+// @Description Create Merchant Rating Image
+// @Accept  json
+// @Param MerchantRatingImageRequest body domain.MerchantRatingImageRequest true " MerchantRatingImageRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantRatingImageData}
+// @Router /api/v1/merchant/rating/image [post]
+// @Tags Merchant
+func (h *merchantHandler) CreateRatingImage(c *gin.Context) {
+	start := time.Now()
+	merchantRatingImageInput := domain.MerchantRatingImageRequest{}
+
+	err := c.ShouldBindJSON(&merchantRatingImageInput)
+	if err != nil {
+
+		errorMessages := []string{}
+
+		for _, v := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s , condition : %s", v.Field(), v.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": errorMessages,
+		})
+
+		return
+	}
+
+	merchantRatingImage, err := h.merchantService.StoreRatingImage(merchantRatingImageInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantRatingImage,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }

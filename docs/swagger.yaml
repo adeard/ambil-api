@@ -122,6 +122,70 @@ definitions:
       updated_at:
         type: string
     type: object
+  domain.MerchantRatingData:
+    properties:
+      created_at:
+        type: string
+      filepath:
+        type: string
+      id:
+        type: integer
+      merchant_id:
+        type: integer
+      notes:
+        type: string
+      order_id:
+        type: integer
+      score:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  domain.MerchantRatingImageData:
+    properties:
+      created_at:
+        type: string
+      filepath:
+        type: string
+      id:
+        type: integer
+      merchant_rating_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  domain.MerchantRatingImageRequest:
+    properties:
+      created_at:
+        type: string
+      filepath:
+        type: string
+      merchant_rating_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  domain.MerchantRatingRequest:
+    properties:
+      created_at:
+        type: string
+      filepath:
+        type: string
+      merchant_id:
+        type: integer
+      notes:
+        type: string
+      order_id:
+        type: integer
+      score:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   domain.MerchantRequest:
     properties:
       address:
@@ -748,6 +812,60 @@ paths:
           schema:
             $ref: '#/definitions/domain.Response'
       summary: Update Merchant Item
+      tags:
+      - Merchant
+  /api/v1/merchant/rating:
+    post:
+      consumes:
+      - application/json
+      description: Create Merchant Rating
+      parameters:
+      - description: ' MerchantRatingRequest Schema '
+        in: body
+        name: MerchantRatingRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MerchantRatingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantRatingData'
+              type: object
+      summary: Create Merchant Rating
+      tags:
+      - Merchant
+  /api/v1/merchant/rating/image:
+    post:
+      consumes:
+      - application/json
+      description: Create Merchant Rating Image
+      parameters:
+      - description: ' MerchantRatingImageRequest Schema '
+        in: body
+        name: MerchantRatingImageRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MerchantRatingImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantRatingImageData'
+              type: object
+      summary: Create Merchant Rating Image
       tags:
       - Merchant
   /api/v1/order:

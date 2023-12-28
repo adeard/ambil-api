@@ -14,6 +14,8 @@ type Repository interface {
 	GetDetailItem(merchantItemId string) (domain.MerchantItemData, error)
 	Store(input domain.MerchantRequest) (domain.MerchantData, error)
 	StoreItem(input domain.MerchantItemRequest) (domain.MerchantItemData, error)
+	StoreRating(input domain.MerchantRatingRequest) (domain.MerchantRatingData, error)
+	StoreRatingImage(input domain.MerchantRatingImageRequest) (domain.MerchantRatingImageData, error)
 	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
 	Update(input domain.MerchantData, updateData map[string]interface{}) error
 	UpdateItem(input domain.MerchantItemData, updateData map[string]interface{}) error
@@ -182,6 +184,24 @@ func (r *repository) StoreCategory(input domain.MerchantCategoryRequest) (domain
 	err := r.db.Create(&merchantCategory).Error
 
 	return merchantCategory, err
+}
+
+func (r *repository) StoreRatingImage(input domain.MerchantRatingImageRequest) (domain.MerchantRatingImageData, error) {
+
+	merchantRatingImage := domain.MerchantRatingImageData{MerchantRatingImageRequest: input}
+
+	err := r.db.Create(&merchantRatingImage).Error
+
+	return merchantRatingImage, err
+}
+
+func (r *repository) StoreRating(input domain.MerchantRatingRequest) (domain.MerchantRatingData, error) {
+
+	merchantRating := domain.MerchantRatingData{MerchantRatingRequest: input}
+
+	err := r.db.Create(&merchantRating).Error
+
+	return merchantRating, err
 }
 
 func (r *repository) GetDetail(merchantId string) (domain.MerchantData, error) {

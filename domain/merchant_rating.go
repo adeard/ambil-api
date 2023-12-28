@@ -19,3 +19,8 @@ type MerchantRatingData struct {
 func (MerchantRatingData) TableName() string {
 	return "merchant_ratings"
 }
+
+type MerchantRatingFilterRequest struct {
+	MerchantRatingRequest
+	FilterRequest
+}

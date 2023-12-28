@@ -15,3 +15,8 @@ type MerchantRatingImageData struct {
 func (MerchantRatingImageData) TableName() string {
 	return "merchant_rating_images"
 }
+
+type MerchantRatingImageFilterRequest struct {
+	MerchantRatingImageRequest
+	FilterRequest
+}
