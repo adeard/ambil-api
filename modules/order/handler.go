@@ -119,7 +119,7 @@ func (h *orderHandler) Create(c *gin.Context) {
 // @Tags Order
 func (h *orderHandler) GetDetail(c *gin.Context) {
 	start := time.Now()
-	orderId := c.Param("order_id")
+	orderId := c.Param("id")
 
 	result, err := h.orderService.GetDetail(orderId)
 	if err != nil {
@@ -149,7 +149,7 @@ func (h *orderHandler) GetDetail(c *gin.Context) {
 // @Tags Order
 func (h *orderHandler) Update(c *gin.Context) {
 	start := time.Now()
-	orderId := c.Param("order_id")
+	orderId := c.Param("id")
 	orderRequest := domain.OrderRequest{}
 
 	c.ShouldBindJSON(&orderRequest)

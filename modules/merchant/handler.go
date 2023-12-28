@@ -21,15 +21,17 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 
 	merchant := v1.Group("merchant")
 	merchant.GET("", handler.GetAll)
+	merchant.GET("item", handler.GetAllItem)
+	merchant.GET("category", handler.GetAllCategory)
 
 	merchant.Use(middlewares.JwtAuthMiddleware())
 
 	merchant.POST("", handler.Create)
-	merchant.GET("/:id", handler.GetDetail)
-	merchant.POST("/:id", handler.Update)
-
-	merchantCategory := merchant.Group("category")
-	merchantCategory.POST("", handler.CreateCategory)
+	merchant.GET(":id", handler.GetDetail)
+	merchant.POST("item", handler.CreateItem)
+	merchant.POST("category", handler.CreateCategory)
+	merchant.POST(":id", handler.Update)
+	merchant.POST("item/:id", handler.UpdateItem)
 }
 
 // @Summary Get All Merchant
@@ -64,6 +66,78 @@ func (h *merchantHandler) GetAll(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        merchants,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Get All Merchant Category
+// @Description Get All Merchant Category
+// @Accept  json
+// @Param MerchantCategoryFilterRequest query domain.MerchantCategoryFilterRequest true " MerchantCategoryFilterRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantCategoryData}
+// @Router /api/v1/merchant/category [get]
+// @Tags Merchant
+func (h *merchantHandler) GetAllCategory(c *gin.Context) {
+	start := time.Now()
+	input := domain.MerchantCategoryFilterRequest{}
+
+	if err := c.ShouldBindQuery(&input); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+		return
+	}
+
+	merchantCategories, err := h.merchantService.GetAllCategory(input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantCategories,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Get All Merchant Item
+// @Description Get All Merchant Item
+// @Accept  json
+// @Param MerchantItemFilterRequest query domain.MerchantItemFilterRequest true " MerchantItemFilterRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantItemData}
+// @Router /api/v1/merchant/item [get]
+// @Tags Merchant
+func (h *merchantHandler) GetAllItem(c *gin.Context) {
+	start := time.Now()
+	input := domain.MerchantItemFilterRequest{}
+
+	if err := c.ShouldBindQuery(&input); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+		return
+	}
+
+	merchantItems, err := h.merchantService.GetAllItem(input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantItems,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }
@@ -154,6 +228,49 @@ func (h *merchantHandler) CreateCategory(c *gin.Context) {
 	})
 }
 
+// @Summary Create Merchant Item
+// @Description Create Merchant Item
+// @Accept  json
+// @Param MerchantItemRequest body domain.MerchantItemRequest true " MerchantItemRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantItemData}
+// @Router /api/v1/merchant/item [post]
+// @Tags Merchant
+func (h *merchantHandler) CreateItem(c *gin.Context) {
+	start := time.Now()
+	merchantItemInput := domain.MerchantItemRequest{}
+
+	err := c.ShouldBindJSON(&merchantItemInput)
+	if err != nil {
+
+		errorMessages := []string{}
+
+		for _, v := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s , condition : %s", v.Field(), v.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": errorMessages,
+		})
+
+		return
+	}
+
+	merchantItem, err := h.merchantService.StoreItem(merchantItemInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantItem,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
 // @Summary Get Detail Merchant
 // @Description Get Detail Merchant
 // @Accept  json
@@ -165,7 +282,7 @@ func (h *merchantHandler) CreateCategory(c *gin.Context) {
 // @Tags Merchant
 func (h *merchantHandler) GetDetail(c *gin.Context) {
 	start := time.Now()
-	merchantId := c.Param("merchant_id")
+	merchantId := c.Param("id")
 
 	result, err := h.merchantService.GetDetail(merchantId)
 	if err != nil {
@@ -195,7 +312,7 @@ func (h *merchantHandler) GetDetail(c *gin.Context) {
 // @Tags Merchant
 func (h *merchantHandler) Update(c *gin.Context) {
 	start := time.Now()
-	merchantId := c.Param("merchant_id")
+	merchantId := c.Param("id")
 	merchantRequest := domain.MerchantRequest{}
 
 	c.ShouldBindJSON(&merchantRequest)
@@ -212,6 +329,39 @@ func (h *merchantHandler) Update(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Message:     "driver updated !",
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Update Merchant Item
+// @Description Update Merchant Item
+// @Accept  json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param merchant_item_id path string true " Merchant Item Id "
+// @Param MerchantItemRequest body domain.MerchantItemRequest true " MerchantItemRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response
+// @Router /api/v1/merchant/item/{merchant_item_id} [post]
+// @Tags Merchant
+func (h *merchantHandler) UpdateItem(c *gin.Context) {
+	start := time.Now()
+	merchantItemId := c.Param("id")
+	merchantItemRequest := domain.MerchantItemRequest{}
+
+	c.ShouldBindJSON(&merchantItemRequest)
+
+	err := h.merchantService.UpdateItem(merchantItemId, merchantItemRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Message:     "item updated !",
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }

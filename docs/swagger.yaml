@@ -82,6 +82,46 @@ definitions:
       user_id:
         type: integer
     type: object
+  domain.MerchantItemData:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: integer
+      merchant_id:
+        type: integer
+      name:
+        type: string
+      picture:
+        type: string
+      price:
+        type: integer
+      total_sold:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  domain.MerchantItemRequest:
+    properties:
+      created_at:
+        type: string
+      is_active:
+        type: integer
+      merchant_id:
+        type: integer
+      name:
+        type: string
+      picture:
+        type: string
+      price:
+        type: integer
+      total_sold:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   domain.MerchantRequest:
     properties:
       address:
@@ -524,6 +564,50 @@ paths:
       tags:
       - Merchant
   /api/v1/merchant/category:
+    get:
+      consumes:
+      - application/json
+      description: Get All Merchant Category
+      parameters:
+      - in: query
+        name: category_id
+        type: integer
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: merchant_id
+        type: integer
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: updated_at
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantCategoryData'
+              type: object
+      summary: Get All Merchant Category
+      tags:
+      - Merchant
     post:
       consumes:
       - application/json
@@ -548,6 +632,122 @@ paths:
                   $ref: '#/definitions/domain.MerchantCategoryData'
               type: object
       summary: Create Category Merchant
+      tags:
+      - Merchant
+  /api/v1/merchant/item:
+    get:
+      consumes:
+      - application/json
+      description: Get All Merchant Item
+      parameters:
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: is_active
+        type: integer
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: merchant_id
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: picture
+        type: string
+      - in: query
+        name: price
+        type: integer
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: total_sold
+        type: integer
+      - in: query
+        name: updated_at
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantItemData'
+              type: object
+      summary: Get All Merchant Item
+      tags:
+      - Merchant
+    post:
+      consumes:
+      - application/json
+      description: Create Merchant Item
+      parameters:
+      - description: ' MerchantItemRequest Schema '
+        in: body
+        name: MerchantItemRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MerchantItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantItemData'
+              type: object
+      summary: Create Merchant Item
+      tags:
+      - Merchant
+  /api/v1/merchant/item/{merchant_item_id}:
+    post:
+      consumes:
+      - application/json
+      description: Update Merchant Item
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ' Merchant Item Id '
+        in: path
+        name: merchant_item_id
+        required: true
+        type: string
+      - description: ' MerchantItemRequest Schema '
+        in: body
+        name: MerchantItemRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MerchantItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Response'
+      summary: Update Merchant Item
       tags:
       - Merchant
   /api/v1/order:

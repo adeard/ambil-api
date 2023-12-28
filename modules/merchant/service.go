@@ -7,11 +7,14 @@ import (
 
 type Service interface {
 	GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantData, error)
+	GetAllItem(input domain.MerchantItemFilterRequest) ([]domain.MerchantItemData, error)
 	GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error)
 	GetDetail(merchantId string) (domain.MerchantData, error)
 	Store(input domain.MerchantRequest) (domain.MerchantData, error)
+	StoreItem(input domain.MerchantItemRequest) (domain.MerchantItemData, error)
 	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
-	Update(driverId string, updatedData domain.MerchantRequest) error
+	Update(merchantId string, updatedData domain.MerchantRequest) error
+	UpdateItem(merchantItemId string, updatedData domain.MerchantItemRequest) error
 }
 
 type service struct {
@@ -58,6 +61,24 @@ func (s *service) GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]
 	return categories, err
 }
 
+func (s *service) GetAllItem(input domain.MerchantItemFilterRequest) ([]domain.MerchantItemData, error) {
+
+	if input.Limit == 0 {
+		input.Limit = 20
+	}
+
+	if input.Page == 0 {
+		input.Page = 1
+	}
+
+	items, err := s.repository.GetAllItem(input)
+	if err != nil {
+		return []domain.MerchantItemData{}, err
+	}
+
+	return items, err
+}
+
 func (s *service) GetDetail(merchantId string) (domain.MerchantData, error) {
 	merchant, err := s.repository.GetDetail(merchantId)
 
@@ -89,6 +110,19 @@ func (s *service) StoreCategory(input domain.MerchantCategoryRequest) (domain.Me
 	}
 
 	return merchantCategory, err
+}
+
+func (s *service) StoreItem(input domain.MerchantItemRequest) (domain.MerchantItemData, error) {
+
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	merchantItem, err := s.repository.StoreItem(input)
+	if err != nil {
+		return domain.MerchantItemData{}, err
+	}
+
+	return merchantItem, err
 }
 
 func (s *service) Update(merchantId string, input domain.MerchantRequest) error {
@@ -135,6 +169,38 @@ func (s *service) Update(merchantId string, input domain.MerchantRequest) error 
 	}
 
 	err = s.repository.Update(merchant, updateData)
+
+	return err
+}
+
+func (s *service) UpdateItem(merchantItemId string, input domain.MerchantItemRequest) error {
+
+	merchantItem, err := s.repository.GetDetailItem(merchantItemId)
+	if err != nil {
+		return err
+	}
+
+	updateData := map[string]interface{}{
+		"updated_at": utils.GetCurrentDateTime(),
+	}
+
+	if input.Price != 0 {
+		updateData["price"] = input.Price
+	}
+
+	if input.Picture != "" {
+		updateData["picture"] = input.Picture
+	}
+
+	if input.Name != "" {
+		updateData["name"] = input.Name
+	}
+
+	if input.IsActive >= 0 {
+		updateData["is_active"] = input.IsActive
+	}
+
+	err = s.repository.UpdateItem(merchantItem, updateData)
 
 	return err
 }

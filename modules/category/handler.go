@@ -119,7 +119,7 @@ func (h *categoryHandler) Create(c *gin.Context) {
 // @Tags Category
 func (h *categoryHandler) GetDetail(c *gin.Context) {
 	start := time.Now()
-	categoryId := c.Param("category_id")
+	categoryId := c.Param("id")
 
 	result, err := h.categoryService.GetDetail(categoryId)
 	if err != nil {
@@ -149,7 +149,7 @@ func (h *categoryHandler) GetDetail(c *gin.Context) {
 // @Tags Category
 func (h *categoryHandler) Update(c *gin.Context) {
 	start := time.Now()
-	categoryId := c.Param("category_id")
+	categoryId := c.Param("id")
 	CategoryRequest := domain.CategoryRequest{}
 
 	c.ShouldBindJSON(&CategoryRequest)
