@@ -9,6 +9,7 @@ import (
 type Repository interface {
 	GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantData, error)
 	GetAllItem(input domain.MerchantItemFilterRequest) ([]domain.MerchantItemData, error)
+	GetAllGallery(input domain.MerchantGalleryFilterRequest) ([]domain.MerchantGalleryData, error)
 	GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error)
 	GetDetail(merchantId string) (domain.MerchantData, error)
 	GetDetailItem(merchantItemId string) (domain.MerchantItemData, error)
@@ -16,6 +17,7 @@ type Repository interface {
 	StoreItem(input domain.MerchantItemRequest) (domain.MerchantItemData, error)
 	StoreRating(input domain.MerchantRatingRequest) (domain.MerchantRatingData, error)
 	StoreRatingImage(input domain.MerchantRatingImageRequest) (domain.MerchantRatingImageData, error)
+	StoreGallery(input domain.MerchantGalleryRequest) (domain.MerchantGalleryData, error)
 	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
 	Update(input domain.MerchantData, updateData map[string]interface{}) error
 	UpdateItem(input domain.MerchantItemData, updateData map[string]interface{}) error
@@ -79,8 +81,38 @@ func (r *repository) GetAll(input domain.MerchantFilterRequest) ([]domain.Mercha
 	return drivers, err
 }
 
+func (r *repository) GetAllGallery(input domain.MerchantGalleryFilterRequest) ([]domain.MerchantGalleryData, error) {
+	var galleries []domain.MerchantGalleryData
+	q := r.db.Debug().Table("merchant_galleries")
+
+	if input.MerchantId != 0 {
+		q = q.Where("merchant_id = ?", input.MerchantId)
+	}
+
+	if input.OrderBy != "" {
+		sort := "asc"
+		order := input.OrderBy
+
+		if input.SortBy != "" {
+			sort = input.SortBy
+		}
+
+		q = q.Order(order + " " + sort)
+	}
+
+	offset := (input.Limit * (input.Page - 1))
+
+	err := q.
+		Limit(input.Limit).
+		Offset(offset).
+		Find(&galleries).
+		Error
+
+	return galleries, err
+}
+
 func (r *repository) GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error) {
-	var drivers []domain.MerchantCategoryData
+	var categories []domain.MerchantCategoryData
 	q := r.db.Debug().Table("merchant_categories")
 
 	if input.MerchantId != 0 {
@@ -107,10 +139,10 @@ func (r *repository) GetAllCategory(input domain.MerchantCategoryFilterRequest) 
 	err := q.
 		Limit(input.Limit).
 		Offset(offset).
-		Find(&drivers).
+		Find(&categories).
 		Error
 
-	return drivers, err
+	return categories, err
 }
 
 func (r *repository) GetAllItem(input domain.MerchantItemFilterRequest) ([]domain.MerchantItemData, error) {
@@ -175,6 +207,15 @@ func (r *repository) StoreItem(input domain.MerchantItemRequest) (domain.Merchan
 	err := r.db.Create(&merchantItem).Error
 
 	return merchantItem, err
+}
+
+func (r *repository) StoreGallery(input domain.MerchantGalleryRequest) (domain.MerchantGalleryData, error) {
+
+	merchantGallery := domain.MerchantGalleryData{MerchantGalleryRequest: input}
+
+	err := r.db.Create(&merchantGallery).Error
+
+	return merchantGallery, err
 }
 
 func (r *repository) StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error) {

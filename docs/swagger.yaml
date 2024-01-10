@@ -82,6 +82,30 @@ definitions:
       user_id:
         type: integer
     type: object
+  domain.MerchantGalleryData:
+    properties:
+      created_at:
+        type: string
+      filepath:
+        type: string
+      id:
+        type: integer
+      merchant_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  domain.MerchantGalleryRequest:
+    properties:
+      created_at:
+        type: string
+      filepath:
+        type: string
+      merchant_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   domain.MerchantItemData:
     properties:
       created_at:
@@ -302,6 +326,58 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  domain.UserLevelData:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: integer
+      level_name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  domain.UserLevelRequest:
+    properties:
+      created_at:
+        type: string
+      is_active:
+        type: integer
+      level_name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  domain.UserMerchantFavouriteData:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      merchant_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  domain.UserMerchantFavouriteRequest:
+    properties:
+      created_at:
+        type: string
+      merchant_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
     type: object
 host: localhost:6969
 info:
@@ -698,6 +774,77 @@ paths:
       summary: Create Category Merchant
       tags:
       - Merchant
+  /api/v1/merchant/gallery:
+    get:
+      consumes:
+      - application/json
+      description: Get All Merchant Gallery
+      parameters:
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: filepath
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: merchant_id
+        type: integer
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: updated_at
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantGalleryData'
+              type: object
+      summary: Get All Merchant Gallery
+      tags:
+      - Merchant
+    post:
+      consumes:
+      - application/json
+      description: Create Gallery Merchant
+      parameters:
+      - description: ' MerchantGalleryRequest Schema '
+        in: body
+        name: MerchantGalleryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MerchantGalleryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.MerchantGalleryData'
+              type: object
+      summary: Create Gallery Merchant
+      tags:
+      - Merchant
   /api/v1/merchant/item:
     get:
       consumes:
@@ -1049,6 +1196,95 @@ paths:
                   $ref: '#/definitions/domain.UserData'
               type: object
       summary: Register
+      tags:
+      - User
+  /api/v1/user/bookmark:
+    post:
+      consumes:
+      - application/json
+      description: Add Favourite Merchant
+      parameters:
+      - description: ' UserMerchantFavouriteRequest Schema '
+        in: body
+        name: UserMerchantFavouriteRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UserMerchantFavouriteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.UserMerchantFavouriteData'
+              type: object
+      summary: Add Favourite Merchant
+      tags:
+      - User
+  /api/v1/user/levels:
+    get:
+      consumes:
+      - application/json
+      description: Get All User Level
+      parameters:
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: is_active
+        type: integer
+      - in: query
+        name: level_name
+        type: string
+      - in: query
+        name: updated_at
+        type: string
+      - in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.UserLevelData'
+              type: object
+      summary: Get All User Level
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Create User Level
+      parameters:
+      - description: ' UserLevelRequest Schema '
+        in: body
+        name: UserLevelRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UserLevelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.UserLevelData'
+              type: object
+      summary: Create User Level
       tags:
       - User
 swagger: "2.0"

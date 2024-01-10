@@ -12,7 +12,10 @@ import (
 
 type Service interface {
 	Login(input domain.AuthRequest) (string, error)
+	GetAllUserLevel(input domain.UserLevelRequest) ([]domain.UserLevelData, error)
 	Create(input domain.RegisterRequest) (domain.UserData, error)
+	CreateUserLevel(input domain.UserLevelRequest) (domain.UserLevelData, error)
+	AddMerchantFavourite(input domain.UserMerchantFavouriteRequest) (domain.UserMerchantFavouriteData, error)
 }
 
 type service struct {
@@ -52,6 +55,41 @@ func (s *service) Create(input domain.RegisterRequest) (domain.UserData, error) 
 	})
 
 	return user, err
+}
+
+func (s *service) GetAllUserLevel(input domain.UserLevelRequest) ([]domain.UserLevelData, error) {
+
+	userLevels, err := s.repository.GetUserLevel(input)
+	if err != nil {
+		return []domain.UserLevelData{}, err
+	}
+
+	return userLevels, err
+}
+
+func (s *service) CreateUserLevel(input domain.UserLevelRequest) (domain.UserLevelData, error) {
+
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	userLevel, err := s.repository.CreateUserLevel(input)
+	if err != nil {
+		return domain.UserLevelData{}, err
+	}
+
+	return userLevel, err
+}
+
+func (s *service) AddMerchantFavourite(input domain.UserMerchantFavouriteRequest) (domain.UserMerchantFavouriteData, error) {
+
+	userMerchantFavourite, err := s.repository.CreateMerchantFavourite(domain.UserMerchantFavouriteRequest{
+		UserId:     input.UserId,
+		MerchantId: input.MerchantId,
+		CreatedAt:  utils.GetCurrentDateTime(),
+		UpdatedAt:  utils.GetCurrentDateTime(),
+	})
+
+	return userMerchantFavourite, err
 }
 
 func (s *service) Login(input domain.AuthRequest) (string, error) {

@@ -8,12 +8,14 @@ import (
 type Service interface {
 	GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantData, error)
 	GetAllItem(input domain.MerchantItemFilterRequest) ([]domain.MerchantItemData, error)
+	GetAllGallery(input domain.MerchantGalleryFilterRequest) ([]domain.MerchantGalleryData, error)
 	GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error)
 	GetDetail(merchantId string) (domain.MerchantData, error)
 	Store(input domain.MerchantRequest) (domain.MerchantData, error)
 	StoreItem(input domain.MerchantItemRequest) (domain.MerchantItemData, error)
 	StoreRating(input domain.MerchantRatingRequest) (domain.MerchantRatingData, error)
 	StoreRatingImage(input domain.MerchantRatingImageRequest) (domain.MerchantRatingImageData, error)
+	StoreGallery(input domain.MerchantGalleryRequest) (domain.MerchantGalleryData, error)
 	StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error)
 	Update(merchantId string, updatedData domain.MerchantRequest) error
 	UpdateItem(merchantItemId string, updatedData domain.MerchantItemRequest) error
@@ -43,6 +45,24 @@ func (s *service) GetAll(input domain.MerchantFilterRequest) ([]domain.MerchantD
 	}
 
 	return merchants, err
+}
+
+func (s *service) GetAllGallery(input domain.MerchantGalleryFilterRequest) ([]domain.MerchantGalleryData, error) {
+
+	if input.Limit == 0 {
+		input.Limit = 20
+	}
+
+	if input.Page == 0 {
+		input.Page = 1
+	}
+
+	galleries, err := s.repository.GetAllGallery(input)
+	if err != nil {
+		return []domain.MerchantGalleryData{}, err
+	}
+
+	return galleries, err
 }
 
 func (s *service) GetAllCategory(input domain.MerchantCategoryFilterRequest) ([]domain.MerchantCategoryData, error) {
@@ -99,6 +119,19 @@ func (s *service) Store(input domain.MerchantRequest) (domain.MerchantData, erro
 	}
 
 	return merchant, err
+}
+
+func (s *service) StoreGallery(input domain.MerchantGalleryRequest) (domain.MerchantGalleryData, error) {
+
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	merchantGallery, err := s.repository.StoreGallery(input)
+	if err != nil {
+		return domain.MerchantGalleryData{}, err
+	}
+
+	return merchantGallery, err
 }
 
 func (s *service) StoreCategory(input domain.MerchantCategoryRequest) (domain.MerchantCategoryData, error) {

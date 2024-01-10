@@ -5,6 +5,7 @@ import (
 	"ambil-api/middlewares"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,12 +23,10 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 	merchant := v1.Group("merchant")
 	merchant.GET("", handler.GetAll)
 	merchant.GET(":id", handler.GetDetail)
+	merchant.GET(":id/gallery", handler.GetGalleryByMerchantId)
 	merchant.POST("", middlewares.JwtAuthMiddleware(), handler.Create)
 	merchant.POST(":id", middlewares.JwtAuthMiddleware(), handler.Update)
-
-	category := merchant.Group("category")
-	category.GET("", handler.GetAllCategory)
-	category.POST("", middlewares.JwtAuthMiddleware(), handler.CreateCategory)
+	merchant.POST("gallery", middlewares.JwtAuthMiddleware(), handler.AddPhotoGallery)
 
 	item := merchant.Group("item")
 	item.GET("", handler.GetAllItem)
@@ -39,6 +38,10 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 	rating.Use(middlewares.JwtAuthMiddleware())
 	rating.POST("", handler.CreateRating)
 	rating.POST("image", handler.CreateRatingImage)
+
+	category := merchant.Group("category")
+	category.GET("", handler.GetAllCategory)
+	category.POST("", middlewares.JwtAuthMiddleware(), handler.CreateCategory)
 }
 
 // @Summary Get All Merchant
@@ -51,7 +54,7 @@ func NewMerchantHandler(v1 *gin.RouterGroup, merchantService Service) {
 // @Tags Merchant
 func (h *merchantHandler) GetAll(c *gin.Context) {
 	start := time.Now()
-	input := domain.MerchantFilterRequest{}
+	input := domain.MerchantGalleryFilterRequest{}
 
 	if err := c.ShouldBindQuery(&input); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{
@@ -61,7 +64,7 @@ func (h *merchantHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	merchants, err := h.merchantService.GetAll(input)
+	merchants, err := h.merchantService.GetAllGallery(input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{
 			Message:     err.Error(),
@@ -73,6 +76,47 @@ func (h *merchantHandler) GetAll(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        merchants,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Get All Merchant Gallery
+// @Description Get All Merchant Gallery
+// @Accept  json
+// @Param MerchantGalleryFilterRequest query domain.MerchantGalleryFilterRequest true " MerchantGalleryFilterRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantGalleryData}
+// @Router /api/v1/merchant/gallery [get]
+// @Tags Merchant
+func (h *merchantHandler) GetGalleryByMerchantId(c *gin.Context) {
+	start := time.Now()
+	merchantId, _ := strconv.Atoi(c.Param("id"))
+	input := domain.MerchantGalleryFilterRequest{
+		MerchantGalleryRequest: domain.MerchantGalleryRequest{
+			MerchantId: merchantId,
+		},
+	}
+
+	if err := c.ShouldBindQuery(&input); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+		return
+	}
+
+	merchantGalleries, err := h.merchantService.GetAllGallery(input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantGalleries,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }
@@ -188,6 +232,49 @@ func (h *merchantHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        merchant,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Create Gallery Merchant
+// @Description Create Gallery Merchant
+// @Accept  json
+// @Param MerchantGalleryRequest body domain.MerchantGalleryRequest true " MerchantGalleryRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.MerchantGalleryData}
+// @Router /api/v1/merchant/gallery [post]
+// @Tags Merchant
+func (h *merchantHandler) AddPhotoGallery(c *gin.Context) {
+	start := time.Now()
+	merchantGalleryInput := domain.MerchantGalleryRequest{}
+
+	err := c.ShouldBindJSON(&merchantGalleryInput)
+	if err != nil {
+
+		errorMessages := []string{}
+
+		for _, v := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s , condition : %s", v.Field(), v.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": errorMessages,
+		})
+
+		return
+	}
+
+	merchantGallery, err := h.merchantService.StoreGallery(merchantGalleryInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        merchantGallery,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }
