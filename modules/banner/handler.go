@@ -25,7 +25,9 @@ func NewCategoryHandler(v1 *gin.RouterGroup, bannerService Service) {
 
 	banner.Use(middlewares.JwtAuthMiddleware())
 
+	banner.GET("type", handler.GetAllBannerType)
 	banner.POST("", handler.Create)
+	banner.POST("type", handler.CreateBannerType)
 	banner.POST("/:id", handler.Update)
 }
 
@@ -61,6 +63,42 @@ func (h *bannerHandler) GetAll(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        banner,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Get All Banner Type
+// @Description Get All Banner Type
+// @Accept  json
+// @Param BannerTypeFilterRequest query domain.BannerTypeFilterRequest true " BannerTypeFilterRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.BannerTypeData}
+// @Router /api/v1/banner/type [get]
+// @Tags Banner
+func (h *bannerHandler) GetAllBannerType(c *gin.Context) {
+	start := time.Now()
+	input := domain.BannerTypeFilterRequest{}
+
+	if err := c.ShouldBindQuery(&input); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+		return
+	}
+
+	bannerType, err := h.bannerService.GetAllBannerType(input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Message:     err.Error(),
+			ElapsedTime: fmt.Sprint(time.Since(start)),
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        bannerType,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }
@@ -104,6 +142,49 @@ func (h *bannerHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.Response{
 		Data:        banner,
+		ElapsedTime: fmt.Sprint(time.Since(start)),
+	})
+}
+
+// @Summary Create Banner Type
+// @Description Create Banner Type
+// @Accept  json
+// @Param BannerTypeRequest body domain.BannerTypeRequest true " BannerTypeRequest Schema "
+// @Produce  json
+// @Success 200 {object} domain.Response{data=domain.BannerTypeData}
+// @Router /api/v1/banner/type [post]
+// @Tags Banner
+func (h *bannerHandler) CreateBannerType(c *gin.Context) {
+	start := time.Now()
+	bannerTypeInput := domain.BannerTypeRequest{}
+
+	err := c.ShouldBindJSON(&bannerTypeInput)
+	if err != nil {
+
+		errorMessages := []string{}
+
+		for _, v := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s , condition : %s", v.Field(), v.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": errorMessages,
+		})
+
+		return
+	}
+
+	bannerType, err := h.bannerService.StoreBannerType(bannerTypeInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors ": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Data:        bannerType,
 		ElapsedTime: fmt.Sprint(time.Since(start)),
 	})
 }

@@ -57,6 +57,30 @@ definitions:
       user_id:
         type: integer
     type: object
+  domain.BannerTypeData:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.BannerTypeRequest:
+    properties:
+      created_at:
+        type: string
+      is_active:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   domain.CategoryData:
     properties:
       created_at:
@@ -592,6 +616,77 @@ paths:
           schema:
             $ref: '#/definitions/domain.Response'
       summary: Update Banner
+      tags:
+      - Banner
+  /api/v1/banner/type:
+    get:
+      consumes:
+      - application/json
+      description: Get All Banner Type
+      parameters:
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: is_active
+        type: integer
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: updated_at
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.BannerTypeData'
+              type: object
+      summary: Get All Banner Type
+      tags:
+      - Banner
+    post:
+      consumes:
+      - application/json
+      description: Create Banner Type
+      parameters:
+      - description: ' BannerTypeRequest Schema '
+        in: body
+        name: BannerTypeRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.BannerTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.BannerTypeData'
+              type: object
+      summary: Create Banner Type
       tags:
       - Banner
   /api/v1/category:

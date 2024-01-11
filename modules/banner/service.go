@@ -7,8 +7,10 @@ import (
 
 type Service interface {
 	GetAll(input domain.BannerFilterRequest) ([]domain.BannerData, error)
+	GetAllBannerType(input domain.BannerTypeFilterRequest) ([]domain.BannerTypeData, error)
 	GetDetail(bannerId string) (domain.BannerData, error)
 	Store(input domain.BannerRequest) (domain.BannerData, error)
+	StoreBannerType(input domain.BannerTypeRequest) (domain.BannerTypeData, error)
 	Update(bannerId string, updatedData domain.BannerRequest) error
 }
 
@@ -38,6 +40,24 @@ func (s *service) GetAll(input domain.BannerFilterRequest) ([]domain.BannerData,
 	return categories, err
 }
 
+func (s *service) GetAllBannerType(input domain.BannerTypeFilterRequest) ([]domain.BannerTypeData, error) {
+
+	if input.Limit == 0 {
+		input.Limit = 20
+	}
+
+	if input.Page == 0 {
+		input.Page = 1
+	}
+
+	bannerType, err := s.repository.GetAllBannerType(input)
+	if err != nil {
+		return []domain.BannerTypeData{}, err
+	}
+
+	return bannerType, err
+}
+
 func (s *service) GetDetail(bannerId string) (domain.BannerData, error) {
 	category, err := s.repository.GetDetail(bannerId)
 
@@ -56,6 +76,20 @@ func (s *service) Store(input domain.BannerRequest) (domain.BannerData, error) {
 	}
 
 	return category, err
+}
+
+func (s *service) StoreBannerType(input domain.BannerTypeRequest) (domain.BannerTypeData, error) {
+
+	input.IsActive = 1
+	input.CreatedAt = utils.GetCurrentDateTime()
+	input.UpdatedAt = utils.GetCurrentDateTime()
+
+	bannerType, err := s.repository.StoreBannerType(input)
+	if err != nil {
+		return domain.BannerTypeData{}, err
+	}
+
+	return bannerType, err
 }
 
 func (s *service) Update(bannerId string, input domain.BannerRequest) error {
