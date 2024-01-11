@@ -9,6 +9,54 @@ definitions:
     - email
     - password
     type: object
+  domain.BannerData:
+    properties:
+      banner_type_id:
+        type: integer
+      created_at:
+        type: string
+      end_date:
+        type: string
+      filepath:
+        type: string
+      id:
+        type: integer
+      index_no:
+        type: integer
+      is_active:
+        type: integer
+      link:
+        type: string
+      start_date:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  domain.BannerRequest:
+    properties:
+      banner_type_id:
+        type: integer
+      created_at:
+        type: string
+      end_date:
+        type: string
+      filepath:
+        type: string
+      index_no:
+        type: integer
+      is_active:
+        type: integer
+      link:
+        type: string
+      start_date:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   domain.CategoryData:
     properties:
       created_at:
@@ -393,6 +441,159 @@ info:
   title: API SWAGGER FOR AMBIL API SERVICE
   version: 1.0.0
 paths:
+  /api/v1/banner:
+    get:
+      consumes:
+      - application/json
+      description: Get All Banner
+      parameters:
+      - in: query
+        name: banner_type_id
+        type: integer
+      - in: query
+        name: created_at
+        type: string
+      - in: query
+        name: end_date
+        type: string
+      - in: query
+        name: filepath
+        type: string
+      - in: query
+        name: index_no
+        type: integer
+      - in: query
+        name: is_active
+        type: integer
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: link
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: start_date
+        type: string
+      - in: query
+        name: updated_at
+        type: string
+      - in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.BannerData'
+              type: object
+      summary: Get All Banner
+      tags:
+      - Banner
+    post:
+      consumes:
+      - application/json
+      description: Create Banner
+      parameters:
+      - description: ' BannerRequest Schema '
+        in: body
+        name: BannerRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.BannerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.BannerData'
+              type: object
+      summary: Create Banner
+      tags:
+      - Banner
+  /api/v1/banner/{banner_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Detail Banner
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ' Banner Id '
+        in: path
+        name: banner_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.BannerData'
+              type: object
+      summary: Get Detail Banner
+      tags:
+      - Banner
+    post:
+      consumes:
+      - application/json
+      description: Update Banner
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ' Banner Id '
+        in: path
+        name: banner_id
+        required: true
+        type: string
+      - description: ' BannerData Schema '
+        in: body
+        name: BannerData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.BannerData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Response'
+      summary: Update Banner
+      tags:
+      - Banner
   /api/v1/category:
     get:
       consumes:
