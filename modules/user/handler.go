@@ -82,7 +82,7 @@ func (h *userHandler) PostUser(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -91,7 +91,7 @@ func (h *userHandler) PostUser(c *gin.Context) {
 	user, err := h.userService.Create(userInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -161,7 +161,7 @@ func (h *userHandler) AddBookmark(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -170,7 +170,7 @@ func (h *userHandler) AddBookmark(c *gin.Context) {
 	result, err := h.userService.AddMerchantFavourite(input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -204,7 +204,7 @@ func (h *userHandler) CreateUserLevels(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -213,7 +213,7 @@ func (h *userHandler) CreateUserLevels(c *gin.Context) {
 	userLevels, err := h.userService.CreateUserLevel(input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}

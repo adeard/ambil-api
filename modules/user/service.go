@@ -32,6 +32,26 @@ func (s *service) Create(input domain.RegisterRequest) (domain.UserData, error) 
 		return domain.UserData{}, errors.New("password not match")
 	}
 
+	checkUser, _ := s.repository.GetDetail(domain.UserData{
+		UserRequest: domain.UserRequest{
+			Email: input.Email,
+		},
+	})
+
+	if checkUser.Email != "" {
+		return domain.UserData{}, errors.New("user already exist")
+	}
+
+	checkUserDesc, _ := s.repository.GetDetailDescription(domain.UserDescriptionData{
+		UserDescriptionRequest: domain.UserDescriptionRequest{
+			PhoneNumber: input.PhoneNumber,
+		},
+	})
+
+	if checkUserDesc.UserId != 0 {
+		return domain.UserData{}, errors.New("user already exist")
+	}
+
 	newUser, _ := hashedUser(domain.UserRequest{
 		Email:    input.Email,
 		Password: input.Password,

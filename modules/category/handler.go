@@ -88,7 +88,7 @@ func (h *categoryHandler) Create(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -97,7 +97,7 @@ func (h *categoryHandler) Create(c *gin.Context) {
 	category, err := h.categoryService.Store(categoryInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}

@@ -88,7 +88,7 @@ func (h *orderHandler) Create(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -97,7 +97,7 @@ func (h *orderHandler) Create(c *gin.Context) {
 	order, err := h.orderService.Store(orderInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}

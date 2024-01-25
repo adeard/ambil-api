@@ -216,7 +216,7 @@ func (h *merchantHandler) Create(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -225,7 +225,7 @@ func (h *merchantHandler) Create(c *gin.Context) {
 	merchant, err := h.merchantService.Store(merchantInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -259,7 +259,7 @@ func (h *merchantHandler) AddPhotoGallery(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -268,7 +268,7 @@ func (h *merchantHandler) AddPhotoGallery(c *gin.Context) {
 	merchantGallery, err := h.merchantService.StoreGallery(merchantGalleryInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -302,7 +302,7 @@ func (h *merchantHandler) CreateCategory(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -311,7 +311,7 @@ func (h *merchantHandler) CreateCategory(c *gin.Context) {
 	merchantCategory, err := h.merchantService.StoreCategory(merchantCategoryInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -345,7 +345,7 @@ func (h *merchantHandler) CreateItem(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -354,7 +354,7 @@ func (h *merchantHandler) CreateItem(c *gin.Context) {
 	merchantItem, err := h.merchantService.StoreItem(merchantItemInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -388,7 +388,7 @@ func (h *merchantHandler) CreateRating(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -397,7 +397,7 @@ func (h *merchantHandler) CreateRating(c *gin.Context) {
 	merchantRating, err := h.merchantService.StoreRating(merchantRatingInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -431,7 +431,7 @@ func (h *merchantHandler) CreateRatingImage(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -440,7 +440,7 @@ func (h *merchantHandler) CreateRatingImage(c *gin.Context) {
 	merchantRatingImage, err := h.merchantService.StoreRatingImage(merchantRatingImageInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}

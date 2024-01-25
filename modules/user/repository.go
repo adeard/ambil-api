@@ -12,6 +12,7 @@ type Repository interface {
 	CreateDescription(input domain.UserDescriptionRequest) (domain.UserDescriptionData, error)
 	CreateMerchantFavourite(input domain.UserMerchantFavouriteRequest) (domain.UserMerchantFavouriteData, error)
 	GetDetail(input domain.UserData) (domain.UserData, error)
+	GetDetailDescription(input domain.UserDescriptionData) (domain.UserDescriptionData, error)
 	GetUserLevel(input domain.UserLevelRequest) ([]domain.UserLevelData, error)
 }
 
@@ -70,6 +71,32 @@ func (r *repository) GetDetail(input domain.UserData) (domain.UserData, error) {
 
 	if input.Id != 0 {
 		q = q.Where("id = ?", input.Id)
+	}
+
+	err := q.First(&user).Error
+
+	return user, err
+}
+
+func (r *repository) GetDetailDescription(input domain.UserDescriptionData) (domain.UserDescriptionData, error) {
+	var user domain.UserDescriptionData
+
+	q := r.db.Debug()
+
+	if input.Fullname != "" {
+		q = q.Where("fullname = ?", input.Fullname)
+	}
+
+	if input.UserId != 0 {
+		q = q.Where("user_id = ?", input.UserId)
+	}
+
+	if input.Id != 0 {
+		q = q.Where("id = ?", input.Id)
+	}
+
+	if input.PhoneNumber != "" {
+		q = q.Where("phone_number = ?", input.PhoneNumber)
 	}
 
 	err := q.First(&user).Error

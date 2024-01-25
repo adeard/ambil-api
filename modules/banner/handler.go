@@ -126,7 +126,7 @@ func (h *bannerHandler) Create(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -135,7 +135,7 @@ func (h *bannerHandler) Create(c *gin.Context) {
 	banner, err := h.bannerService.Store(bannerInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
@@ -169,7 +169,7 @@ func (h *bannerHandler) CreateBannerType(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": errorMessages,
+			"errors": errorMessages,
 		})
 
 		return
@@ -178,7 +178,7 @@ func (h *bannerHandler) CreateBannerType(c *gin.Context) {
 	bannerType, err := h.bannerService.StoreBannerType(bannerTypeInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors ": err.Error(),
+			"errors": err.Error(),
 		})
 		return
 	}
