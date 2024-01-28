@@ -41,7 +41,7 @@ func Connect() *gorm.DB {
 }
 
 func MysqlDev(DbUser string, DbPassword string, DbHost string, DbPort string, DbName string, Dbdriver string) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DbUser, DbPassword, DbHost, DbPort, DbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", DbUser, DbPassword, DbHost, DbPort, DbName)
 	Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		fmt.Println("Cannot connect to database ", Dbdriver)
